@@ -142,9 +142,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Use Einstein Transcribe
       const transcription = await speechFoundationsClient.transcribeAudio(
-        audioBuffer, 
+        audioBuffer,
         req.file.mimetype,
-        'spanish' // Default to English, can be made configurable
+        'spanish' // Default to Spanish, can be made configurable
       );
 
       // Clean up uploaded file
