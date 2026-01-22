@@ -163,29 +163,32 @@ export class AgentforceClient {
       payload
     );
 
-    console.log('🔍 RAW API RESPONSE:', JSON.stringify(response, null, 2));
+    console.log('=== RAW API RESPONSE START ===');
+    console.log(JSON.stringify(response, null, 2));
+    console.log('=== RAW API RESPONSE END ===');
 
     // Extract the message from the response - it may be in a different format
     // The API might return messages array or a single message
     if (response.messages && response.messages.length > 0) {
-      console.log('🔍 Found messages array with', response.messages.length, 'messages');
+      console.log('>>> Found messages array with', response.messages.length, 'messages');
       const lastMessage = response.messages[response.messages.length - 1];
-      console.log('🔍 Last message object:', JSON.stringify(lastMessage, null, 2));
+      console.log('>>> Last message object:', JSON.stringify(lastMessage, null, 2));
 
       if (lastMessage && lastMessage.message) {
-        console.log('🔍 Message field type:', typeof lastMessage.message);
-        console.log('🔍 Message field value:', lastMessage.message);
+        console.log('>>> Message field type:', typeof lastMessage.message);
+        console.log('>>> Message field value:', lastMessage.message);
 
         // Check if the message is already a JSON object string
         // If it contains both message and data fields, serialize the whole object
         if (typeof lastMessage.message === 'string') {
           try {
             const parsed = JSON.parse(lastMessage.message);
-            console.log('🔍 Message is valid JSON, parsed structure:', JSON.stringify(parsed, null, 2));
+            console.log('>>> Message is valid JSON, parsed structure:');
+            console.log(JSON.stringify(parsed, null, 2));
             // If it parsed successfully and has the expected structure, return as-is
             return lastMessage.message;
           } catch (e) {
-            console.log('🔍 Message is plain text, not JSON');
+            console.log('>>> Message is plain text, not JSON');
             // Not JSON, return as plain text
             return lastMessage.message;
           }
@@ -194,16 +197,16 @@ export class AgentforceClient {
         const result = typeof lastMessage.message === 'object'
           ? JSON.stringify(lastMessage.message)
           : lastMessage.message;
-        console.log('🔍 Returning serialized message:', result);
+        console.log('>>> Returning serialized message:', result);
         return result;
       }
     }
 
     // Fallback: check if response.message exists
-    console.log('🔍 No messages array found, checking response.message');
+    console.log('>>> No messages array found, checking response.message');
     if (response.message) {
-      console.log('🔍 Found response.message, type:', typeof response.message);
-      console.log('🔍 response.message value:', response.message);
+      console.log('>>> Found response.message, type:', typeof response.message);
+      console.log('>>> response.message value:', response.message);
       // Same logic as above
       if (typeof response.message === 'string') {
         return response.message;
@@ -212,7 +215,7 @@ export class AgentforceClient {
     }
 
     // Ensure we always return a string, never undefined
-    console.log('⚠️ No message found in response, returning default message');
+    console.log('!!! WARNING: No message found in response, returning default message');
     return 'Response received from agent';
   }
 
