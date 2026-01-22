@@ -83,7 +83,7 @@ export class SpeechFoundationsClient {
     }
   }
 
-  async transcribeAudio(audioBuffer: Buffer, mimeType: string, language: string = 'english'): Promise<string> {
+  async transcribeAudio(audioBuffer: Buffer, mimeType: string, language: string = 'spanish'): Promise<string> {
     const token = await this.getAccessToken();
     
     const formData = new FormData();
