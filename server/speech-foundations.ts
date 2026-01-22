@@ -89,7 +89,7 @@ export class SpeechFoundationsClient {
     const formData = new FormData();
     const audioBlob = new Blob([audioBuffer], { type: mimeType });
     formData.append('input', audioBlob, 'audio.webm');
-    formData.append('engine', 'internal');
+    formData.append('engine', 'aws');
     formData.append('language', language);
 
     console.log('🎤 Calling Einstein Transcribe API...');
