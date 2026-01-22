@@ -129,7 +129,7 @@ export class SpeechFoundationsClient {
     // Use ElevenLabs engine with V2 API format
     const requestConfig = JSON.stringify({
       engine: 'elevenlabs',
-      voice_id: voiceIdString,
+      voiceIdString: voiceIdString,
       language: 'en'
     });
     formData.append('request', requestConfig);
