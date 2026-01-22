@@ -144,7 +144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const transcription = await speechFoundationsClient.transcribeAudio(
         audioBuffer, 
         req.file.mimetype,
-        'english' // Default to English, can be made configurable
+        'spanish' // Default to English, can be made configurable
       );
 
       // Clean up uploaded file
