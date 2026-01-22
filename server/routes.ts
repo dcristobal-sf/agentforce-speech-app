@@ -390,9 +390,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       console.log('✅ Agent response validated:', response.substring(0, 100) + '...');
+      console.log('📝 FULL RAW RESPONSE FROM AGENT:', response);
+      console.log('📝 Response type:', typeof response);
+      console.log('📝 Response length:', response.length);
+
+      // Try to parse and show structure
+      try {
+        const parsed = JSON.parse(response);
+        console.log('📝 PARSED JSON STRUCTURE:', JSON.stringify(parsed, null, 2));
+        console.log('📝 Has data array?', Array.isArray(parsed.data));
+        if (parsed.data && parsed.data.length > 0) {
+          console.log('📝 First data item:', JSON.stringify(parsed.data[0], null, 2));
+        }
+      } catch (e) {
+        console.log('📝 Response is NOT valid JSON, treating as plain text');
+      }
 
       // Process response to separate TTS and UI versions
       const processed = processAgentforceResponse(response);
+      console.log('📝 PROCESSED RESULT:');
+      console.log('  - hasHtml:', processed.hasHtml);
+      console.log('  - textForTts length:', processed.textForTts.length);
+      console.log('  - textForUi length:', processed.textForUi.length);
+      console.log('  - textForUi preview:', processed.textForUi.substring(0, 200));
 
       // Update conversation with sessionId if it's new or changed
       if (sessionId !== conversation.sessionId) {
