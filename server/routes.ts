@@ -185,28 +185,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Voice mapping for ElevenLabs (used by Einstein Speech V2)
+  // These voices work well with Spanish (Spain)
   const voiceMapping: { [key: string]: string } = {
-    'shimmer': 'pNInz6obpgDQGcFmaJgB', // Adam - clear male voice
-    'alloy': 'JBFqnCBsd6RMkjVDRZzb',   // George - mature male voice
-    'echo': 'TxGEqnHWrfWFTfGW9XjX',    // Josh - deep male voice
-    'fable': 'AZnzlk1XvdvUeBnXmlld',   // Domi - expressive female voice
-    'onyx': 'VR6AewLTigWG4xSOukaG',    // Arnold - strong male voice
-    'nova': 'EXAVITQu4vr4xnSDxMaL',    // Bella - expressive female voice
-    'allison': 'xctasy8XvGp2cVO9HL9k'  // Allison - millennial female voice (default)
+    'matilda': 'XrExE9yKIg1WjnnlVkGX',  // Matilda - warm female voice, good for Spanish
+    'jessica': 'cgSgspJ2msm6clMCkdW9',  // Jessica - young female voice, natural for Spanish
+    'daniel': 'onwK4e9ZLuTAKqWW03F9',  // Daniel - neutral male voice, good for Spanish
+    'rachel': '21m00Tcm4TlvDq8ikWAM',  // Rachel - calm female voice (default for Spanish)
+    'antoni': 'ErXwobaYiN019PkySvjV',  // Antoni - well-rounded male voice
+    'arnold': 'VR6AewLTigWG4xSOukaG',  // Arnold - strong male voice
+    'bella': 'EXAVITQu4vr4xnSDxMaL',   // Bella - expressive female voice
+    'elli': 'MF3mGyEYCl7XYWbV9V6O'     // Elli - emotional female voice
   };
 
 
   // Text-to-Speech using Einstein Speech V2 with ElevenLabs voices
   app.get('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'allison' } = req.query;
-      
+      const { text, voice = 'rachel' } = req.query;
+
       if (!text || typeof text !== 'string') {
         return res.status(400).json({ error: 'Text is required' });
       }
 
       // Map voice name to ElevenLabs voice ID
-      const voiceId = voiceMapping[voice as string] || voiceMapping['allison'];
+      const voiceId = voiceMapping[voice as string] || voiceMapping['rachel'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
@@ -246,14 +248,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Keep POST endpoint for backward compatibility
   app.post('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'allison' } = req.body;
-      
+      const { text, voice = 'rachel' } = req.body;
+
       if (!text) {
         return res.status(400).json({ error: 'Text is required' });
       }
 
       // Map voice name to ElevenLabs voice ID
-      const voiceId = voiceMapping[voice] || voiceMapping['allison'];
+      const voiceId = voiceMapping[voice] || voiceMapping['rachel'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
