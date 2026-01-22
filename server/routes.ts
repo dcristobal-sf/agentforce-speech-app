@@ -184,31 +184,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Voice mapping for ElevenLabs (used by Einstein Speech V2)
-  // These voices work well with Spanish (Spain)
+  // Voice mapping for native Spanish (Spain) voices
   const voiceMapping: { [key: string]: string } = {
-    'matilda': 'XrExE9yKIg1WjnnlVkGX',  // Matilda - warm female voice, good for Spanish
-    'jessica': 'cgSgspJ2msm6clMCkdW9',  // Jessica - young female voice, natural for Spanish
-    'daniel': 'onwK4e9ZLuTAKqWW03F9',  // Daniel - neutral male voice, good for Spanish
-    'rachel': '21m00Tcm4TlvDq8ikWAM',  // Rachel - calm female voice (default for Spanish)
-    'antoni': 'ErXwobaYiN019PkySvjV',  // Antoni - well-rounded male voice
-    'arnold': 'VR6AewLTigWG4xSOukaG',  // Arnold - strong male voice
-    'bella': 'EXAVITQu4vr4xnSDxMaL',   // Bella - expressive female voice
-    'elli': 'MF3mGyEYCl7XYWbV9V6O'     // Elli - emotional female voice
+    // Native Spanish voices
+    'mateo': 'wkuDMN1ptHyPzZcU37bK',   // Mateo - Middle-aged male, Spanish
+    'hugo': 'UxLppKk2DHpPKLV59Lwo',    // Hugo - Middle-aged male, Spanish
+    'martin': 'ccApat1nZq29MI9bwDPB',  // Martín - Young adult male, Spanish
+    'julia': 'QPyKkS6G2o1razyQb3ks',   // Julia - Middle-aged female, Spanish (default)
+    'paula': 'xCgyYk3lsaZoe5iRHTGb',   // Paula - Young adult female, Spanish
+    'lucia': '5lyHt3pomylrlAK5VRjm',   // Lucía - Young adult female, Spanish
+    // Legacy ElevenLabs voices (for compatibility)
+    'matilda': 'XrExE9yKIg1WjnnlVkGX',
+    'jessica': 'cgSgspJ2msm6clMCkdW9',
+    'daniel': 'onwK4e9ZLuTAKqWW03F9',
+    'rachel': '21m00Tcm4TlvDq8ikWAM',
+    'antoni': 'ErXwobaYiN019PkySvjV',
+    'arnold': 'VR6AewLTigWG4xSOukaG',
+    'bella': 'EXAVITQu4vr4xnSDxMaL',
+    'elli': 'MF3mGyEYCl7XYWbV9V6O'
   };
 
 
   // Text-to-Speech using Einstein Speech V2 with ElevenLabs voices
   app.get('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'antoni' } = req.query;
+      const { text, voice = 'julia' } = req.query;
 
       if (!text || typeof text !== 'string') {
         return res.status(400).json({ error: 'Text is required' });
       }
 
-      // Map voice name to ElevenLabs voice ID
-      const voiceId = voiceMapping[voice as string] || voiceMapping['antoni'];
+      // Map voice name to Spanish voice ID
+      const voiceId = voiceMapping[voice as string] || voiceMapping['julia'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
@@ -248,14 +255,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Keep POST endpoint for backward compatibility
   app.post('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'antoni' } = req.body;
+      const { text, voice = 'julia' } = req.body;
 
       if (!text) {
         return res.status(400).json({ error: 'Text is required' });
       }
 
-      // Map voice name to ElevenLabs voice ID
-      const voiceId = voiceMapping[voice] || voiceMapping['antoni'];
+      // Map voice name to Spanish voice ID
+      const voiceId = voiceMapping[voice] || voiceMapping['julia'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
