@@ -83,7 +83,7 @@ export class SpeechFoundationsClient {
     }
   }
 
-  async transcribeAudio(audioBuffer: Buffer, mimeType: string, language: string = 'es-ES'): Promise<string> {
+  async transcribeAudio(audioBuffer: Buffer, mimeType: string, language: string = 'spanish'): Promise<string> {
     const token = await this.getAccessToken();
     
     const formData = new FormData();
@@ -130,7 +130,7 @@ export class SpeechFoundationsClient {
     const requestConfig = JSON.stringify({
       engine: 'elevenlabs',
       voice_id: voiceId,
-      language: 'en'
+      language: 'es-ES'
     });
     formData.append('request', requestConfig);
 
