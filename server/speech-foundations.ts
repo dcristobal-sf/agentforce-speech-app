@@ -120,21 +120,21 @@ export class SpeechFoundationsClient {
     return transcription;
   }
 
-  async synthesizeSpeech(text: string, voiceId: string = 'QPyKkS6G2o1razyQb3ks'): Promise<Buffer> {
+  async synthesizeSpeech(text: string, voiceIdString: string = 'QPyKkS6G2o1razyQb3ks'): Promise<Buffer> {
     const token = await this.getAccessToken();
-    
+
     const formData = new FormData();
     formData.append('input', text);
-    
+
     // Use ElevenLabs engine with V2 API format
     const requestConfig = JSON.stringify({
       engine: 'elevenlabs',
-      voice_id: voiceId,
+      voice_id: voiceIdString,
       language: 'en'
     });
     formData.append('request', requestConfig);
 
-    console.log('🔊 Calling Einstein Speech API (ElevenLabs)...', { text: text.substring(0, 50) + '...', voiceId });
+    console.log('🔊 Calling Einstein Speech API (ElevenLabs)...', { text: text.substring(0, 50) + '...', voiceIdString });
 
     const response = await fetch(
       'https://api.salesforce.com/einstein/platform/v1/models/transcribeInternalV1/speech-synthesis',
