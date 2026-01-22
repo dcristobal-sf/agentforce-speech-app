@@ -140,7 +140,7 @@ export class AgentforceClient {
       streamingCapabilities: {
         chunkTypes: ["Text"]
       },
-      "bypassUser": false
+      bypassUser: false
     };
 
     console.log('Starting session with payload:', JSON.stringify(payload, null, 2));
