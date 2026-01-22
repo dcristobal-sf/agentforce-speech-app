@@ -175,31 +175,26 @@ export class AgentforceClient {
       const lastMessage = response.messages[response.messages.length - 1];
       console.log('>>> Last message object:', JSON.stringify(lastMessage, null, 2));
 
-      if (lastMessage && lastMessage.message) {
+      if (lastMessage) {
         console.log('>>> Message field type:', typeof lastMessage.message);
         console.log('>>> Message field value:', lastMessage.message);
 
-        // Check if the message is already a JSON object string
-        // If it contains both message and data fields, serialize the whole object
-        if (typeof lastMessage.message === 'string') {
-          try {
-            const parsed = JSON.parse(lastMessage.message);
-            console.log('>>> Message is valid JSON, parsed structure:');
-            console.log(JSON.stringify(parsed, null, 2));
-            // If it parsed successfully and has the expected structure, return as-is
-            return lastMessage.message;
-          } catch (e) {
-            console.log('>>> Message is plain text, not JSON');
-            // Not JSON, return as plain text
-            return lastMessage.message;
-          }
+        // Check if lastMessage has a result array with HTML content
+        if (lastMessage.result && Array.isArray(lastMessage.result) && lastMessage.result.length > 0) {
+          console.log('>>> Found result array, creating structured response with message and result');
+          // Create a structured response with both message and result
+          const structuredResponse = {
+            message: lastMessage.message,
+            data: lastMessage.result  // Rename 'result' to 'data' for consistency with our processing code
+          };
+          return JSON.stringify(structuredResponse);
         }
-        // If message is an object, serialize it
-        const result = typeof lastMessage.message === 'object'
-          ? JSON.stringify(lastMessage.message)
-          : lastMessage.message;
-        console.log('>>> Returning serialized message:', result);
-        return result;
+
+        // Fallback: if no result array, just return the message
+        console.log('>>> No result array found, returning plain message');
+        return typeof lastMessage.message === 'string'
+          ? lastMessage.message
+          : JSON.stringify(lastMessage.message);
       }
     }
 
