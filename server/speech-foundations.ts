@@ -120,7 +120,7 @@ export class SpeechFoundationsClient {
     return transcription;
   }
 
-  async synthesizeSpeech(text: string, voiceId: string = '21m00Tcm4TlvDq8ikWAM'): Promise<Buffer> {
+  async synthesizeSpeech(text: string, voiceId: string = 'ErXwobaYiN019PkySvjV'): Promise<Buffer> {
     const token = await this.getAccessToken();
     
     const formData = new FormData();

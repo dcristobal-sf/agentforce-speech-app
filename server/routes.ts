@@ -201,14 +201,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Text-to-Speech using Einstein Speech V2 with ElevenLabs voices
   app.get('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'rachel' } = req.query;
+      const { text, voice = 'antoni' } = req.query;
 
       if (!text || typeof text !== 'string') {
         return res.status(400).json({ error: 'Text is required' });
       }
 
       // Map voice name to ElevenLabs voice ID
-      const voiceId = voiceMapping[voice as string] || voiceMapping['rachel'];
+      const voiceId = voiceMapping[voice as string] || voiceMapping['antoni'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
@@ -248,14 +248,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Keep POST endpoint for backward compatibility
   app.post('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'rachel' } = req.body;
+      const { text, voice = 'antoni' } = req.body;
 
       if (!text) {
         return res.status(400).json({ error: 'Text is required' });
       }
 
       // Map voice name to ElevenLabs voice ID
-      const voiceId = voiceMapping[voice] || voiceMapping['rachel'];
+      const voiceId = voiceMapping[voice] || voiceMapping['antoni'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
