@@ -1,18 +1,28 @@
-import { ArrowLeft, Settings } from 'lucide-react';
+import { ArrowLeft, Settings, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ChatHeaderProps {
   agentName?: string;
   isOnline?: boolean;
   onBack?: () => void;
   onSettings?: () => void;
+  language?: 'english' | 'spanish';
+  onLanguageChange?: (language: 'english' | 'spanish') => void;
 }
 
-export default function ChatHeader({ 
-  agentName = "Agentforce", 
+export default function ChatHeader({
+  agentName = "Agentforce",
   isOnline = true,
   onBack,
-  onSettings
+  onSettings,
+  language = 'english',
+  onLanguageChange
 }: ChatHeaderProps) {
   return (
     <header className="flex items-center justify-between p-lg border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
@@ -50,16 +60,45 @@ export default function ChatHeader({
           </div>
         </div>
       </div>
-      
-      <Button 
-        variant="ghost" 
-        size="icon"
-        onClick={onSettings}
-        data-testid="button-settings"
-        className="w-8 h-8"
-      >
-        <Settings className="w-4 h-4" />
-      </Button>
+
+      <div className="flex items-center gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              data-testid="button-language"
+              className="w-8 h-8"
+            >
+              <Languages className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => onLanguageChange?.('english')}
+              className={language === 'english' ? 'bg-accent' : ''}
+            >
+              🇬🇧 English
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onLanguageChange?.('spanish')}
+              className={language === 'spanish' ? 'bg-accent' : ''}
+            >
+              🇪🇸 Español
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onSettings}
+          data-testid="button-settings"
+          className="w-8 h-8"
+        >
+          <Settings className="w-4 h-4" />
+        </Button>
+      </div>
     </header>
   );
 }
