@@ -214,8 +214,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Text is required' });
       }
 
-      // Map voice name to Spanish voice ID
-      const voiceId = voiceMapping[voice as string] || voiceMapping['julia'];
+      // Map voice name to voice ID
+      const voiceId = voiceMapping[voice as string] || voiceMapping['rachel'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
@@ -255,14 +255,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Keep POST endpoint for backward compatibility
   app.post('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'julia' } = req.body;
+      const { text, voice = 'rachel' } = req.body;
 
       if (!text) {
         return res.status(400).json({ error: 'Text is required' });
       }
 
-      // Map voice name to Spanish voice ID
-      const voiceId = voiceMapping[voice] || voiceMapping['julia'];
+      // Map voice name to voice ID
+      const voiceId = voiceMapping[voice] || voiceMapping['rachel'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
