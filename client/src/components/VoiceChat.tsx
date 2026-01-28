@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, Phone, Settings, Download, Loader2, MessageCircle, History, Plus, Send, Calendar, Clock, Volume2, VolumeX } from 'lucide-react';
+import { Mic, Phone, Settings, Download, Loader2, MessageCircle, History, Plus, Send, Calendar, Clock, Volume2, VolumeX, Languages } from 'lucide-react';
 import { 
   Drawer,
   DrawerContent,
@@ -16,6 +16,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
@@ -52,6 +58,11 @@ export default function VoiceChat() {
   const [recordingState, setRecordingState] = useState<RecordingState>('idle');
   const [recordingError, setRecordingError] = useState<string | null>(null);
   
+  // Language state
+  const [language, setLanguage] = useState<'english' | 'spanish'>(() => {
+    return (localStorage.getItem('language') as 'english' | 'spanish') || 'english';
+  });
+
   // Audio permission and playback state
   const [audioEnabled, setAudioEnabled] = useState<boolean>(() => {
     return localStorage.getItem('audioEnabled') === 'true';
@@ -119,6 +130,11 @@ export default function VoiceChat() {
 
     restoreAudioContext();
   }, []); // Run only once on mount
+
+  // Save language preference to localStorage
+  useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
 
   // Initialize audio context with user gesture
   const initializeAudio = useCallback(async () => {
@@ -532,7 +548,7 @@ export default function VoiceChat() {
       console.log('Sending audio file:', `recording.${fileExtension}`, 'with type:', audioBlob.type);
       formData.append('file', audioBlob, `recording.${fileExtension}`);
 
-      const sttResponse = await fetch('/api/stt', {
+      const sttResponse = await fetch(`/api/stt?language=${language}`, {
         method: 'POST',
         body: formData,
       });
@@ -602,9 +618,9 @@ export default function VoiceChat() {
       }
 
       console.log('🎵 Playing TTS audio:', text.substring(0, 50) + '...');
-      
+
       // Use a unique URL with query params to enable audio streaming
-      const audioUrl = `/api/tts?text=${encodeURIComponent(text)}&voice=allison&_t=${Date.now()}`;
+      const audioUrl = `/api/tts?text=${encodeURIComponent(text)}&language=${language}&_t=${Date.now()}`;
       
       // Safari iOS workaround: Reuse blessed audio element if available
       let audio: HTMLAudioElement;
@@ -727,6 +743,34 @@ export default function VoiceChat() {
           
           {/* Header Actions */}
           <div className="flex items-center gap-sm">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="touch-target w-11 h-11 rounded-full"
+                  data-testid="button-language"
+                  aria-label="Change language"
+                >
+                  <Languages className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => setLanguage('english')}
+                  className={language === 'english' ? 'bg-accent' : ''}
+                >
+                  🇬🇧 English
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setLanguage('spanish')}
+                  className={language === 'spanish' ? 'bg-accent' : ''}
+                >
+                  🇪🇸 Español
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Drawer open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
               <DrawerTrigger asChild>
                 <Button

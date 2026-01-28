@@ -130,21 +130,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'No audio file provided' });
       }
 
+      // Get language from query parameter or body, default to 'english'
+      const language = (req.query.language as string) || (req.body.language as string) || 'english';
+
       console.log('STT: Received file:', {
         originalname: req.file.originalname,
         mimetype: req.file.mimetype,
         size: req.file.size,
-        filename: req.file.filename
+        filename: req.file.filename,
+        language
       });
 
       // Read audio file
       const audioBuffer = fs.readFileSync(req.file.path);
-      
+
       // Use Einstein Transcribe
       const transcription = await speechFoundationsClient.transcribeAudio(
         audioBuffer,
         req.file.mimetype,
-        'spanish' // Default to Spanish, can be made configurable
+        language
       );
 
       // Clean up uploaded file
@@ -184,38 +188,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Voice mapping for native Spanish (Spain) voices
+  // Voice mapping for native Spanish (Spain) and English voices
   const voiceMapping: { [key: string]: string } = {
     // Native Spanish voices
     'mateo': 'wkuDMN1ptHyPzZcU37bK',   // Mateo - Middle-aged male, Spanish
     'hugo': 'UxLppKk2DHpPKLV59Lwo',    // Hugo - Middle-aged male, Spanish
     'martin': 'ccApat1nZq29MI9bwDPB',  // Martín - Young adult male, Spanish
-    'julia': 'QPyKkS6G2o1razyQb3ks',   // Julia - Middle-aged female, Spanish (default)
+    'julia': 'QPyKkS6G2o1razyQb3ks',   // Julia - Middle-aged female, Spanish
     'paula': 'xCgyYk3lsaZoe5iRHTGb',   // Paula - Young adult female, Spanish
     'lucia': '5lyHt3pomylrlAK5VRjm',   // Lucía - Young adult female, Spanish
-    // Legacy ElevenLabs voices (for compatibility)
+    // English voices
     'matilda': 'XrExE9yKIg1WjnnlVkGX',
     'jessica': 'cgSgspJ2msm6clMCkdW9',
     'daniel': 'onwK4e9ZLuTAKqWW03F9',
-    'rachel': '21m00Tcm4TlvDq8ikWAM',
+    'rachel': '21m00Tcm4TlvDq8ikWAM',  // Rachel - Clear female, English (default for English)
     'antoni': 'ErXwobaYiN019PkySvjV',
     'arnold': 'VR6AewLTigWG4xSOukaG',
     'bella': 'EXAVITQu4vr4xnSDxMaL',
     'elli': 'MF3mGyEYCl7XYWbV9V6O'
   };
 
+  // Default voices by language
+  const defaultVoicesByLanguage: { [key: string]: string } = {
+    'english': 'rachel',
+    'spanish': 'julia'
+  };
+
 
   // Text-to-Speech using Einstein Speech V2 with ElevenLabs voices
   app.get('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'julia' } = req.query;
+      const { text, voice, language = 'english' } = req.query;
 
       if (!text || typeof text !== 'string') {
         return res.status(400).json({ error: 'Text is required' });
       }
 
-      // Map voice name to Spanish voice ID
-      const voiceId = voiceMapping[voice as string] || voiceMapping['julia'];
+      // Determine voice: use provided voice, or default for language
+      const selectedVoice = voice as string || defaultVoicesByLanguage[language as string] || 'rachel';
+
+      // Map voice name to voice ID
+      const voiceId = voiceMapping[selectedVoice] || voiceMapping['rachel'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
@@ -255,14 +268,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Keep POST endpoint for backward compatibility
   app.post('/api/tts', async (req, res) => {
     try {
-      const { text, voice = 'julia' } = req.body;
+      const { text, voice, language = 'english' } = req.body;
 
       if (!text) {
         return res.status(400).json({ error: 'Text is required' });
       }
 
-      // Map voice name to Spanish voice ID
-      const voiceId = voiceMapping[voice] || voiceMapping['julia'];
+      // Determine voice: use provided voice, or default for language
+      const selectedVoice = voice || defaultVoicesByLanguage[language] || 'rachel';
+
+      // Map voice name to voice ID
+      const voiceId = voiceMapping[selectedVoice] || voiceMapping['rachel'];
       
       // Use Einstein Speech to synthesize
       const audioBuffer = await speechFoundationsClient.synthesizeSpeech(text, voiceId);
