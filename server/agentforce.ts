@@ -93,7 +93,7 @@ export class AgentforceClient {
       throw new Error('Instance URL not available - ensure authentication is complete');
     }
     
-    const url = `https://api.salesforce.com/einstein/ai-agent/v2${endpoint}`;
+    const url = `https://api.salesforce.com/einstein/ai-agent/v1${endpoint}`;
     console.log('API call URL:', url);
 
     const headers: Record<string, string> = {
